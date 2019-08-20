@@ -17,15 +17,6 @@ const store:StoreOptions<RootState> = {
         {
             return state.__reloadKey__;
         },
-        isApplicationMessageChanged(state:RootState):boolean
-        {
-            return state.__applicationMessage__ === state.__applicationMessage__;
-        },
-        existApplicationMessage(state:RootState):boolean
-        {
-            return state.__applicationMessage__.length > 0
-                    && state.__redirecting__;
-        },
         redirecting(state:RootState):boolean{
             return state.__redirecting__;
         },

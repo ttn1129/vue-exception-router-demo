@@ -4,11 +4,11 @@
      v-if="show"
      :message="getApplicationMessage()"
     ></ApplicationMessage>
-    {{ this.username }}
+      {{ this.username }}
     <div class="links">
       <router-link to="/dashboard">Dashboard</router-link>
       <router-link to="/">Login</router-link>
-      <router-link to="/errror">ServerError</router-link>
+      <router-link to="/ServerError">ServerError</router-link>
     </div>
     <img alt="Vue logo" src="./assets/logo.png">
      <router-view/>
@@ -63,30 +63,44 @@ export default class App extends Vue {
   private get user():UserInterface{
     return this.$store.state.Profile.user;
   }
-  @Getter('existApplicationMessage') existApplicationMessage!:boolean;
-  @Getter('isApplicationMessageChanged') isApplicationMessageChanged!:boolean;
+  // @Getter('existApplicationMessage') existApplicationMessage!:boolean;
+  // @Getter('isApplicationMessageChanged') isApplicationMessageChanged!:boolean;
   @Getter('getApplicationMessage') applicationMessage!:string;
   @Getter('getReloadKey') reloadKey!:number;
   private username:string = this.user.name;
-  private reloading:boolean = false;
+  // private reloading:boolean = false;
   private getApplicationMessage():string
   {
     return this.applicationMessage;
   }
   mounted():void {
-    // this.$store.subscribe((mutation, state) => {
-    //   switch(mutation.type) {
-    //     case 'setApplicationMessage':
-    //       const newValue = mutation.payload; 
-    //       const oldValue = state.__applicationMessage__;
-    //       console.log('watch work->newValue:' + newValue+ ', oldValue:'+oldValue)
-    //       if(newValue === ''
-    //       || newValue === oldValue)
-    //       {
-    //         this.show = false;
-    //         this.$store.commit('reload');
-    //         return;
-    //       }
+    this.$store.subscribe((mutation, state) => {
+      switch(mutation.type) {
+        case 'setApplicationMessage':
+          this.show = false;
+          const newValue = mutation.payload; 
+          if(newValue === '')
+          {
+            this.$store.commit('reload');
+            return;
+          }
+          this.show = true;
+          this.$store.commit('reload');
+          this.$store.commit('setRedirecting',false)
+          break;
+      }
+    });
+    // this.$store.watch(
+    //   (state, getters)=> getters.getApplicationMessage,
+    //   (newValue, oldValue) => {
+    //     console.log('watch work->newValue:' + newValue+ ', oldValue:'+oldValue)
+    //     if(newValue === ''
+    //      || newValue === oldValue)
+    //     {
+    //       this.show = false;
+    //       this.$store.commit('reload');
+    //       return;
+    //     }
     //     if(newValue !== '')
     //     {
     //       this.show = true;
@@ -94,29 +108,7 @@ export default class App extends Vue {
     //       return;
     //     }
     //     this.show = false;
-    //     this.$store.commit('reload');
-    //     break;
-    //   }
     // });
-    this.$store.watch(
-      (state, getters)=> getters.getApplicationMessage,
-      (newValue, oldValue) => {
-        console.log('watch work->newValue:' + newValue+ ', oldValue:'+oldValue)
-        if(newValue === ''
-         || newValue === oldValue)
-        {
-          this.show = false;
-          this.$store.commit('reload');
-          return;
-        }
-        if(newValue !== '')
-        {
-          this.show = true;
-          this.$store.commit('reload');
-          return;
-        }
-        this.show = false;
-    });
   }
   private show:boolean= false;
 
